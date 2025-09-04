@@ -82,7 +82,16 @@ export const generatePromotionalContent = async (
     });
 
     const selectedTheme = THEMES.find(t => t.id === themeId);
-    const imagePrompt = `High-quality, professional promotional image for an Indonesian MSME product. Product: "${productInfo.productName}". Description: "${productInfo.description}". Visual style: ${selectedTheme?.prompt}. The image should be visually appealing and suitable for social media. Do not include any text in the image.`;
+    
+    // Base instruction to always include shop name, WA number, and description
+    let textInstructions = `Subtly and professionally, include the shop name "${productInfo.shopName}" and WhatsApp number "${productInfo.waNumber}" at the bottom of the image. This contact information should be clear and legible but should not be the main focus. Also, tastefully integrate the product description onto the image: "${productInfo.description}".`;
+
+    // Add promo text instruction if it exists
+    if (productInfo.promo) {
+      textInstructions += ` Additionally, tastefully embed the main promotional text onto the image: "${productInfo.promo}". This promo text should be more prominent than the description and contact info, but should not overpower the product itself.`;
+    }
+
+    const imagePrompt = `High-quality, professional promotional image for an Indonesian MSME product. Product: "${productInfo.productName}". Description: "${productInfo.description}". Visual style: ${selectedTheme?.prompt}. The image must be visually appealing and suitable for social media. ${textInstructions}`;
 
     const imageGenerationPromise = ai.models.generateImages({
         model: 'imagen-4.0-generate-001',
